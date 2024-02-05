@@ -1,12 +1,17 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
+import logCollector from "./modules/logCollector.mjs";
 
 const server = express();
 const port = process.env.PORT || 8080;
 server.set("port", port);
-
-// Defining a static file folder
 server.use(express.static("public"));
+
+// Server logging
+const logger = new logCollector();
+server.use(logger.createAutoHTTPLogger());
+
+server.use("/user", USER_API);
 
 server.get("/", (req, res, next) => {
   res
@@ -14,7 +19,8 @@ server.get("/", (req, res, next) => {
     .send(JSON.stringify({ message: "Successful response! " }))
     .end();
 });
-// start the server
+
+
 server.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
 });

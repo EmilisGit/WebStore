@@ -1,3 +1,5 @@
+// Script connected to checkbox in checkout.html 
+// Shows/hides company detail inputs if the user is purchasing on behalf of a company
 function toggleCompanyDetails() {
   const checkboxState = document.getElementById("company");
   const companyDetails = document.getElementById("company-info");

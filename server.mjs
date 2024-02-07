@@ -1,6 +1,7 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
 import logCollector from "./modules/logCollector.mjs";
+import USER_API from "./routes/userRoutes.mjs";
 
 const server = express();
 const port = process.env.PORT || 8080;
@@ -19,7 +20,6 @@ server.get("/", (req, res, next) => {
     .send(JSON.stringify({ message: "Successful response! " }))
     .end();
 });
-
 
 server.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);

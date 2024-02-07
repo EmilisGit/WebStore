@@ -1,4 +1,4 @@
-import express, {response} from "express";
+import express, { response } from "express";
 import { User, CompanyUser } from "../modules/user.mjs";
 import { StatusCodes } from "http-status-codes";
 
@@ -7,16 +7,14 @@ USER_API.use(express.json());
 
 const users = [];
 
-USER_API.get('/:id', (req, res, next) => {
+USER_API.get("/:id", (req, res, next) => {});
 
-})
+USER_API.post("/", (req, res, next) => {
+  console.log = req.body;
 
-USER_API.post('/', (req, res, next) =>{
-    const {email} = req.body;
-    
-    if(email == ""){
-        res.status(StatusCodes.BAD_REQUEST).send("No email provided").end();
-    }
-})
+  if (email == "") {
+    res.status(StatusCodes.BAD_REQUEST).send("No email provided").end();
+  }
+});
 
-
+export default USER_API;

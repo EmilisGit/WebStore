@@ -1,10 +1,11 @@
 import express, { response } from "express";
 import { User, CompanyUser } from "../modules/user.mjs";
-import { StatusCodes } from "http-status-codes";
+import { httpCodes } from "../modules/httpCodes.mjs";
 import {
   isEmpty,
   containsIllegalChars,
 } from "../modules/ValidateInput/validateInput.mjs";
+import isValidEmail from "../modules/ValidateInput/validateEmail.mjs";
 import logCollector from "../modules/logCollector.mjs";
 
 const USER_API = express.Router();
@@ -25,7 +26,11 @@ USER_API.post("/", (req, res, next) => {
     zipCode,
   } = req.body;
   try {
-    if (!isEmpty(email) && !containsIllegalChars(email)) {
+    if (
+      !isEmpty(email) &&
+      !containsIllegalChars(email) &&
+      isValidEmail(email)
+    ) {
       users.push([
         email,
         companyName,
@@ -35,16 +40,14 @@ USER_API.post("/", (req, res, next) => {
         address,
         zipCode,
       ]);
-      console.log("New user added");
+      logCollector.log("New user added");
+    } else {
+      throw new Error("Invalid input");
     }
-  } catch (e) {
-    logCollector.log(e);
+  } catch (err) {
+    return next(err);
   }
-
-  if (email == "") {
-    res.status(StatusCodes.BAD_REQUEST).send("No email provided").end();
-  }
-  res.status(StatusCodes.OK).end();
+  return res.status(httpCodes.OK).end();
 });
 
 export default USER_API;

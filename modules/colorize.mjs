@@ -1,4 +1,4 @@
-import httpMethods from "./httpMethods.mjs";
+import { httpMethods } from "./httpCodes.mjs";
 import chalk from "chalk";
 
 let COLORS = {};

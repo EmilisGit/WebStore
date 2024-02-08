@@ -53,7 +53,7 @@ class logCollector {
     const time = new Date().toLocaleDateString();
 
     method = colorize(method);
-    this.#writeToLog([time, "  ", method, path].join("  "));
+    this.#writeToLog([time, " ", path, method].join(" "));
 
     next();
   }
@@ -68,6 +68,7 @@ class logCollector {
     console.log(fileName);
     fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
       if (err) {
+        return;
         console.error("Log collection error: ", err);
       }
     });

@@ -49,7 +49,7 @@ class logCollector {
 
   #logHTTPRequest(req, res, next) {
     let method = req.method;
-    const path = req.origialUrl;
+    const path = req.path;
     const time = new Date().toLocaleDateString();
 
     method = colorize(method);
@@ -62,7 +62,15 @@ class logCollector {
     msg += "\n";
     console.log(msg);
 
-    //fs.appendFile("./logs/log.txt", msg, { encoding: "utf8" }, (err) => {});
+    // Using regex to replace all occurances of  symbol / with -
+    let fileName = new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
+    let path = "c:/Projects/WebStore/logs/" + fileName;
+    console.log(fileName);
+    fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
+      if (err) {
+        console.error("Log collection error: ", err);
+      }
+    });
   }
 }
 

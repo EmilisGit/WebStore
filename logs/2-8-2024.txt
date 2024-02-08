@@ -1,0 +1,3 @@
+2/8/2024      [32mGET[39m  /placeholder.svg
+2/8/2024      [32mGET[39m  /favicon.ico
+2/8/2024      [93mPOST[39m  /user

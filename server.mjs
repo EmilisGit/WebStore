@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { httpCodes } from "./modules/httpCodes.mjs";
 import logCollector from "./modules/logCollector.mjs";

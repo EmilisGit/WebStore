@@ -24,7 +24,7 @@ class logCollector {
   }
 
   static log(msg, logLevel = logCollector.LOGGING_LEVEL.NORMAL) {
-    let logger = logCollector.instance;
+    let logger = new logCollector();
     if (logger.#globalLevel > logLevel) {
       return;
     }

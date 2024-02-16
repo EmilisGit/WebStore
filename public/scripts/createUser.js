@@ -1,4 +1,4 @@
-function createUser() {
+function postUser() {
   const submitUserButton = document.getElementById("SubmitUser");
   const checkboxState = document.getElementById("company");
   submitUserButton.onclick = async function (e) {
@@ -11,12 +11,12 @@ function createUser() {
     const zipCode = null;
 
     if (checkboxState.getAttribute("data-state") === "checked") {
-      const companyName = document.getElementById("company-name").value;
-      const companyCode = document.getElementById("company-code").value;
-      const companyTaxCode = document.getElementById("company-tax-code").value;
-      const country = document.getElementById("country").value;
-      const address = document.getElementById("address").value;
-      const zipCode = document.getElementById("zip-code").value;
+      companyName = document.getElementById("company-name").value;
+      companyCode = document.getElementById("company-code").value;
+      companyTaxCode = document.getElementById("company-tax-code").value;
+      country = document.getElementById("country").value;
+      address = document.getElementById("address").value;
+      zipCode = document.getElementById("zip-code").value;
     }
     const user = {
       email,
@@ -27,6 +27,7 @@ function createUser() {
       address,
       zipCode,
     };
+    console.log(user);
     const response = await postTo("/user", user);
   };
 }

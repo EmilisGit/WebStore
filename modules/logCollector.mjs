@@ -51,25 +51,22 @@ class logCollector {
     let method = req.method;
     const path = req.path;
     const time = new Date().toLocaleDateString();
-
-    method = colorize(method);
     this.#writeToLog([time, " ", path, method].join(" "));
-
+    method = colorize(method);
+    console.log(time, " ", path, method);
     next();
   }
 
   #writeToLog(msg) {
     msg += "\n";
     console.log(msg);
-
     // Using regex to replace all occurances of  symbol / with -
     let fileName = new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
     let path = "c:/Projects/WebStore/logs/" + fileName;
-    console.log(fileName);
     fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
       if (err) {
-        return;
         console.error("Log collection error: ", err);
+        return;
       }
     });
   }

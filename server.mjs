@@ -4,6 +4,7 @@ import { httpCodes } from "./modules/httpCodes.mjs";
 import logCollector from "./modules/logCollector.mjs";
 import USER_API from "./routes/userRoutes.mjs";
 import errorHandler from "./modules/ErrorHandler.mjs";
+import User from "./modules/user.mjs";
 
 const server = express();
 const port = process.env.PORT || 8080;

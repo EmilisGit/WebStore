@@ -1,8 +1,7 @@
 import pg from "pg";
 import logCollector from "./logCollector.mjs";
 
-// We are using an environment variable to get the db credentials
-if (process.env.DB_CONNECTIONSTRING == undefined) {
+if (process.env.DB_CONNECTIONSTRING_LIVE == undefined) {
   throw "No db connection string detected";
 }
 
@@ -16,16 +15,26 @@ class dbManager {
     };
   }
 
-  async connect() {
+  async createUser(user) {
+    const client = new pg.Client(this.#credentials);
     try {
-      const client = new pg.Client(this.#credentials);
       await client.connect();
-      logCollector.log("Connected to db!!! -------- ");
-      return client;
+
+      const output = await client.query(
+        'INSERT INTO "public"."users"("email") VALUES($1) RETURNING "user_id";',
+        [user.email]
+      );
+
+      if (output.rows.length == 1) {
+        user.id = output.rows[0].id;
+      }
     } catch (error) {
-      console.error("Error connecting to database:", error);
-      throw error;
+      logCollector.log(error);
+      //TODO : Error handling?? Remember that this is a module seperate from your server
+    } finally {
+      client.end();
     }
+    return user;
   }
 }
-export default new dbManager(process.env.DB_CONNECTIONSTRING);
+export default new dbManager(process.env.DB_CONNECTIONSTRING_LOCAL);

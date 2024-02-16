@@ -1,5 +1,5 @@
-import dbManager from "./dbManager.mjs";
 import errorHandler from "./ErrorHandler.mjs";
+import dbManager from "./dbManager.mjs";
 
 class User {
   constructor() {
@@ -12,32 +12,16 @@ class User {
     this.address = null;
     this.zipCode = null;
   }
-
-  async addUser() {
-    try {
-      const client = await dbManager.connect();
-      await client.query(
-        "INSERT INTO public.users (email, company_name, company_code, company_tax_code, country, address, zipcode) VALUES ($1, $2, $3, $4, $5, $6, $7);",
-        [
-          this.email,
-          this.companyName,
-          this.companyCode,
-          this.companyTaxCode,
-          this.country,
-          this.address,
-          this.zipCode,
-        ]
-      );
-      await client.end();
-    } catch (error) {
-      console.error(error);
-      //errorHandler(error);
-      console.log("New user added successfully  ");
-      throw error;
-    } finally {
-      client.end();
+  // for orders  "INSERT INTO public.users (email, company_name, company_code, company_tax_code, country, address, zipcode) VALUES ($1, $2, $3, $4, $5, $6, $7);"
+  addUser() {
+    if (!this.email) {
+      throw new Error("Email is required");
     }
+    // TODO: implement this
+    // if(this.email.exists()){
+    //   throw new Error("User already exists");
+    // }
+    return dbManager.createUser(this);
   }
 }
-
 export default User;

@@ -50,7 +50,7 @@ class logCollector {
   #logHTTPRequest(req, res, next) {
     let method = req.method;
     const path = req.path;
-    const time = new Date().toLocaleDateString();
+    const time = new Date().toLocaleTimeString();
     this.#writeToLog([time, " ", path, method].join(" "));
     method = colorize(method);
     console.log(time, " ", path, method);

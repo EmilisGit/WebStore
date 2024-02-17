@@ -3,12 +3,12 @@ function postUser() {
   const checkboxState = document.getElementById("company");
   submitUserButton.onclick = async function (e) {
     const email = document.getElementById("email").value;
-    const companyName = null;
-    const companyCode = null;
-    const companyTaxCode = null;
-    const country = null;
-    const address = null;
-    const zipCode = null;
+    let companyName = null;
+    let companyCode = null;
+    let companyTaxCode = null;
+    let country = null;
+    let address = null;
+    let zipCode = null;
 
     if (checkboxState.getAttribute("data-state") === "checked") {
       companyName = document.getElementById("company-name").value;
@@ -27,7 +27,6 @@ function postUser() {
       address,
       zipCode,
     };
-    console.log(user);
     const response = await postTo("/user", user);
   };
 }

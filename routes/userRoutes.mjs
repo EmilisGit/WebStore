@@ -22,21 +22,23 @@ USER_API.post("/", (req, res, next) => {
     address,
     zipCode,
   } = req.body;
-  // if (!isEmpty(email) && !containsIllegalChars(email) && isValidEmail(email)) {
-  let user = new User();
-  user.email = email;
-  console.log(user.email);
-  user.companyName = companyName;
-  user.companyCode = companyCode;
-  user.companyTaxCode = companyTaxCode;
-  user.country = country;
-  user.address = address;
-  user.zipCode = zipCode;
-  user.addUser();
-  logCollector.log("Added new email:" + user.email);
-  // } else {
-  //
-  return res.status(httpCodes.OK).end();
+  if (containsIllegalChars(req.body)) {
+    return res.status(httpCodes.BadRequest).end();
+  }
+  if (!isEmpty(email) && isValidEmail(email)) {
+    let user = new User();
+    user.email = email;
+    user.companyName = companyName;
+    user.companyCode = companyCode;
+    user.companyTaxCode = companyTaxCode;
+    user.country = country;
+    user.address = address;
+    user.zipCode = zipCode;
+    user.addUser();
+    return res.status(httpCodes.OK).end();
+  } else {
+    return res.status(httpCodes.BadRequest).end();
+  }
 });
 
 export default USER_API;

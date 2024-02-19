@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import colorize from "./colorize.mjs";
+import { colorizeMethod, red, green } from "./colorize.mjs";
 
 class logCollector {
   static LOGGING_LEVEL = {
@@ -31,18 +31,32 @@ class logCollector {
     logger.#writeToLog(msg);
   }
 
+  static logError(msg, logLevel = logCollector.LOGGING_LEVEL.CRITICAL) {
+    let logger = new logCollector();
+    if (logger.#globalLevel > logLevel) {
+      return;
+    }
+    logger.#writeToLog(red(msg));
+  }
+
+  static logSuccess(msg, logLevel = logCollector.LOGGING_LEVEL.DETAILED) {
+    let logger = new logCollector();
+    if (logger.#globalLevel > logLevel) {
+      return;
+    }
+    logger.#writeToLog(green(msg));
+  }
+
   createAutoHTTPLogger() {
     return this.createHTTPLogger({ level: logCollector.LOGGING_LEVEL.NORMAL });
   }
 
   createHTTPLogger(options) {
     const level = options.level || logCollector.LOGGING_LEVEL.NORMAL;
-
     return (req, res, next) => {
       if (this.#globalLevel > level) {
         return;
       }
-
       this.#logHTTPRequest(req, res, next);
     };
   }
@@ -52,7 +66,7 @@ class logCollector {
     const path = req.path;
     const time = new Date().toLocaleTimeString();
     this.#writeToLog([time, " ", path, method].join(" "));
-    method = colorize(method);
+    method = colorizeMethod(method);
     console.log(time, " ", path, method);
     next();
   }

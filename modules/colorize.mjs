@@ -9,11 +9,19 @@ COLORS[httpMethods.PUT] = chalk.yellow;
 COLORS[httpMethods.DELETE] = chalk.magenta;
 COLORS.Default = chalk.grey;
 
-const colorize = function (method) {
+const colorizeMethod = function (method) {
   if (method in COLORS) {
     return COLORS[method](method);
   }
   return COLORS.Default(method);
 };
 
-export default colorize;
+const red = function (msg) {
+  return chalk.red(msg);
+};
+
+const green = function (msg) {
+  return chalk.green(msg);
+};
+
+export { colorizeMethod, red, green };

@@ -1,5 +1,6 @@
 import pg from "pg";
 import logCollector from "./logCollector.mjs";
+import { DatabaseError } from "./ErrorHandling/customErrors.mjs";
 
 if (process.env.DB_CONNECTIONSTRING_LIVE == undefined) {
   throw "No db connection string detected";
@@ -19,22 +20,20 @@ class dbManager {
     const client = new pg.Client(this.#credentials);
     try {
       await client.connect();
-
       const output = await client.query(
         'INSERT INTO "public"."users"("email") VALUES($1) RETURNING "user_id";',
         [user.email]
       );
-
       if (output.rows.length == 1) {
-        user.id = output.rows[0].id;
+        user.id = output.rows[0].user_id;
       }
+      logCollector.logSuccess(`User with id ${user.id} created`);
+      return user.id;
     } catch (error) {
-      logCollector.log(error);
-      //TODO : Error handling?? Remember that this is a module seperate from your server
+      throw new DatabaseError(error.code);
     } finally {
       client.end();
     }
-    return user;
   }
 }
 export default new dbManager(process.env.DB_CONNECTIONSTRING_LOCAL);

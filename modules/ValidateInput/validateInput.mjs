@@ -1,15 +1,16 @@
+import { BadRequestError } from "../ErrorHandling/customErrors.mjs";
 const ILLEGAL_CHARS = /[\";<>]/;
 
 export function containsIllegalChars(input) {
   if (ILLEGAL_CHARS.test(input)) {
-    throw new Error("Input contains illegal characters.");
+    throw new BadRequestError("Input contains illegal characters.");
   }
   return false;
 }
 
 export function isEmpty(input) {
   if (input.trim().length === 0) {
-    throw new Error("Received input is empty.");
+    throw new BadRequestError("Input is empty.");
   }
   return false;
 }

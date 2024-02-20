@@ -7,8 +7,6 @@ import {
 } from "../modules/ValidateInput/validateInput.mjs";
 import isValidEmail from "../modules/ValidateInput/validateEmail.mjs";
 import logCollector from "../modules/logCollector.mjs";
-import errorHandler from "../modules/ErrorHandling/errorHandler.mjs";
-import { BadRequestError } from "../modules/ErrorHandling/customErrors.mjs";
 
 const USER_API = express.Router();
 USER_API.use(express.json());
@@ -42,6 +40,7 @@ USER_API.post("/", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+  next();
 });
 
 export default USER_API;

@@ -9,16 +9,18 @@ const server = express();
 const port = process.env.PORT || 8080;
 server.set("port", port);
 const logger = new logCollector();
+server.use(logger.createAutoHTTPLogger());
 
 server.use(express.static("public"));
 server.use("/user", USER_API);
-server.use(logger.createAutoHTTPLogger(), errorHandler);
+server.use(errorHandler);
 
 server.get("/", (req, res, next) => {
   res
     .status(httpCodes.OK)
     .send(JSON.stringify({ message: "Successful response! " }))
     .end();
+  next();
 });
 
 server.listen(port, () => {

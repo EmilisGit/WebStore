@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { colorizeMethod, red, green } from "./colorize.mjs";
+import { colorizeMethod, colorizeMessage } from "./colorize.mjs";
 
 class logCollector {
   static LOGGING_LEVEL = {
@@ -23,28 +23,25 @@ class logCollector {
     return logCollector.instance;
   }
 
-  static log(msg, logLevel = logCollector.LOGGING_LEVEL.NORMAL) {
+  static log(
+    msg,
+    logLevel = logCollector.LOGGING_LEVEL.NORMAL,
+    color = "grey"
+  ) {
     let logger = new logCollector();
     if (logger.#globalLevel > logLevel) {
       return;
     }
     logger.#writeToLog(msg);
+    console.log("\n" + colorizeMessage(msg, color));
   }
 
-  static logError(msg, logLevel = logCollector.LOGGING_LEVEL.CRITICAL) {
-    let logger = new logCollector();
-    if (logger.#globalLevel > logLevel) {
-      return;
-    }
-    logger.#writeToLog(red(msg));
+  static logError(msg) {
+    return this.log(msg, logCollector.LOGGING_LEVEL.CRITICAL, "red");
   }
 
-  static logSuccess(msg, logLevel = logCollector.LOGGING_LEVEL.DETAILED) {
-    let logger = new logCollector();
-    if (logger.#globalLevel > logLevel) {
-      return;
-    }
-    logger.#writeToLog(green(msg));
+  static logSuccess(msg) {
+    return this.log(msg, logCollector.LOGGING_LEVEL.NORMAL, "green");
   }
 
   createAutoHTTPLogger() {
@@ -64,22 +61,21 @@ class logCollector {
   #logHTTPRequest(req, res, next) {
     let method = req.method;
     const path = req.path;
-    const time = new Date().toLocaleTimeString();
-    this.#writeToLog([time, " ", path, method].join(" "));
+    this.#writeToLog([method, path].join(" "));
     method = colorizeMethod(method);
-    console.log(time, " ", path, method);
+    console.log(method, path);
     next();
   }
 
   #writeToLog(msg) {
-    msg += "\n";
-    console.log(msg);
+    const time = new Date().toLocaleTimeString();
+    msg += "\n" + time + "  ";
     // Using regex to replace all occurances of  symbol / with -
     let fileName = new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
     let path = "c:/Projects/WebStore/logs/" + fileName;
     fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
       if (err) {
-        console.error("Log collection error: ", err);
+        throw new Error("Error writing to log file: " + err.message);
         return;
       }
     });

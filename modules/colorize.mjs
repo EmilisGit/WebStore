@@ -16,12 +16,12 @@ const colorizeMethod = function (method) {
   return COLORS.Default(method);
 };
 
-const red = function (msg) {
-  return chalk.red(msg);
+const colorizeMessage = function (msg, color) {
+  if (typeof chalk[color] === "function") {
+    return chalk[color](msg);
+  } else {
+    console.log("Invalid color: ", color);
+  }
 };
 
-const green = function (msg) {
-  return chalk.green(msg);
-};
-
-export { colorizeMethod, red, green };
+export { colorizeMethod, colorizeMessage };

@@ -35,5 +35,25 @@ class dbManager {
       client.end();
     }
   }
+
+  async createOrder(order) {
+    const client = new pg.Client(this.#credentials);
+    try {
+      await client.connect();
+      const output = await client.query(
+        "INSERT INTO public.users (email, company_name, company_code, company_tax_code, country, address, zipcode, order_product_no, subscription_months, cost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);",
+        [order.userId, order.productId, order.subscribtionMonths, order.cost]
+      );
+      if (output.rows.length == 1) {
+        order.id = output.rows[0].order_id;
+      }
+      logCollector.logSuccess(`Order with id ${order.id} created`);
+      return order.id;
+    } catch (error) {
+      throw new DatabaseError(error.code);
+    } finally {
+      client.end();
+    }
+  }
 }
 export default new dbManager(process.env.DB_CONNECTIONSTRING_LOCAL);

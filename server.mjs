@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { httpCodes } from "./modules/httpCodes.mjs";
 import logCollector from "./modules/logCollector.mjs";
+import ORDER_API from "./routes/orderRoutes.mjs";
 import USER_API from "./routes/userRoutes.mjs";
 import errorHandler from "./modules/ErrorHandling/errorHandler.mjs";
 
@@ -13,6 +14,7 @@ server.use(logger.createAutoHTTPLogger());
 
 server.use(express.static("public"));
 server.use("/user", USER_API);
+server.use("/order", ORDER_API);
 server.use(errorHandler);
 
 server.get("/", (req, res, next) => {

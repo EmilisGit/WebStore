@@ -1,10 +1,6 @@
 import pg from "pg";
 import logCollector from "./logCollector.mjs";
-import { DatabaseError } from "./ErrorHandling/customErrors.mjs";
-
-if (process.env.DB_CONNECTIONSTRING_LIVE == undefined) {
-  throw "No db connection string detected";
-}
+import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
 
 class dbManager {
   #credentials = {};
@@ -56,4 +52,13 @@ class dbManager {
     }
   }
 }
-export default new dbManager(process.env.DB_CONNECTIONSTRING_LOCAL);
+
+let connectionString =
+  process.env.ENVIRONMENT === "local"
+    ? process.env.DB_CONNECTIONSTRING_LOCAL
+    : process.env.DB_CONNECTIONSTRING_PROD;
+
+if (connectionString === undefined) {
+  throw new InternalError("No database connection string found.");
+}
+export default new dbManager(connectionString);

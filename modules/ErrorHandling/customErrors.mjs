@@ -22,4 +22,11 @@ class DatabaseError extends Error {
     this.code = code;
   }
 }
-export { BadRequestError, UserExists, DatabaseError };
+class InternalError extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = this.constructor.name;
+    this.statusCode = httpCodes.InternalError;
+  }
+}
+export { BadRequestError, UserExists, DatabaseError, InternalError };

@@ -17,7 +17,6 @@ const errorHandler = (error, req, res, next) => {
     if (error.code === errorCodes.unique_violation) {
       return res.status(httpCodes.Conflict).send(error.message);
     }
-    return res.status(httpCodes.InternalError).send(error.message);
   }
   return res.status(httpCodes.InternalError).send(error.message);
 };

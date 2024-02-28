@@ -1,7 +1,20 @@
-async function postOrder() {
-  const submitOrderButton = document.getElementById("SubmitOrder");
+function createOrderObject() {
+  let productIds = [];
+  let subscriptionMonths = 3;
+  let cost = 50;
+  let company_id = null;
+
+  const order = {
+    productIds,
+    subscriptionMonths,
+    cost,
+    company_id,
+  };
+  return order;
+}
+
+function createCompanyObject() {
   const checkboxState = document.getElementById("company");
-  const email = document.getElementById("email").value;
   let companyName = null;
   let companyCode = null;
   let companyTaxCode = null;
@@ -17,8 +30,8 @@ async function postOrder() {
     address = document.getElementById("address").value;
     zipCode = document.getElementById("zip-code").value;
   }
-  const order = {
-    email,
+
+  const company = {
     companyName,
     companyCode,
     companyTaxCode,
@@ -26,8 +39,15 @@ async function postOrder() {
     address,
     zipCode,
   };
-  const response = await postTo("/order", order);
+  return company;
 }
+
+async function postOrder() {
+  const order = createOrderObject();
+  const company = createCompanyObject();
+  const response = await postTo("/checkout", { order, company });
+}
+
 async function postTo(url, data) {
   const header = {
     method: "POST",

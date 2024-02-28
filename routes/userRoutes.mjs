@@ -1,5 +1,5 @@
 import express from "express";
-import User from "../modules/classes/user.mjs";
+import User from "../classes/user.mjs";
 import { httpCodes } from "../modules/httpCodes.mjs";
 import {
   isEmpty,
@@ -20,7 +20,8 @@ USER_API.post("/", async (req, res, next) => {
     if (!isEmpty(email) && isValidEmail(email)) {
       let user = new User();
       user.email = email;
-      await user.addUser();
+      req.session.userId = await user.addUser();
+      console.log(req.session.userId);
       return res.status(httpCodes.OK).end();
     }
   } catch (error) {

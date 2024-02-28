@@ -1,10 +1,9 @@
-import dbManager from "../dbManager.mjs";
+import dbManager from "../modules/dbManager.mjs";
 
 class User {
   constructor() {
     this.id;
     this.email;
-    this.companyId;
   }
   addUser() {
     return dbManager.createUser(this);

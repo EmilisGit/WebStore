@@ -15,8 +15,8 @@ class UserExists extends Error {
   }
 }
 class DatabaseError extends Error {
-  constructor(code) {
-    super();
+  constructor(msg, code) {
+    super(msg);
     this.name = this.constructor.name;
     this.statusCode = httpCodes.InternalError;
     this.code = code;

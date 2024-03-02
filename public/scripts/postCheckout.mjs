@@ -1,5 +1,5 @@
 function createOrderObject() {
-  let productIds = [];
+  let productIds = [1, 2, 4];
   let subscriptionMonths = 3;
   let cost = 50;
   let company_id = null;
@@ -42,7 +42,7 @@ function createCompanyObject() {
   return company;
 }
 
-async function postOrder() {
+async function postCheckout() {
   const order = createOrderObject();
   const company = createCompanyObject();
   const response = await postTo("/checkout", { order, company });

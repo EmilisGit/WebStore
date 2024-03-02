@@ -19,7 +19,9 @@ async function storeOrder(req, res, next) {
     const orderData = req.body.order;
     let order = new Order(orderData);
     order.userId = req.session.userId;
-    await order.addOrder();
+    order.companyId = req.session.companyId;
+    req.session.orderId = await order.addOrder();
+    return res.status(httpCodes.OK).end();
   } catch (error) {
     next(error);
   }
@@ -32,7 +34,8 @@ async function storeCompany(req, res, next) {
     }
     const companyData = req.body.company;
     let company = new Company(companyData);
-    await company.addCompany();
+    req.session.companyId = await company.addCompany();
+    return res.status(httpCodes.OK).end();
   } catch (error) {
     next(error);
   }
@@ -40,6 +43,8 @@ async function storeCompany(req, res, next) {
 
 CHECKOUT_API.post("/", async (req, res, next) => {
   try {
+    await storeCompany(req, res, next);
+    await storeOrder(req, res, next);
     return res.status(httpCodes.OK).end();
   } catch (error) {
     next(error);

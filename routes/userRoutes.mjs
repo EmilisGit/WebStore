@@ -21,7 +21,6 @@ USER_API.post("/", async (req, res, next) => {
       let user = new User();
       user.email = email;
       req.session.userId = await user.addUser();
-      console.log(req.session.userId);
       return res.status(httpCodes.OK).end();
     }
   } catch (error) {

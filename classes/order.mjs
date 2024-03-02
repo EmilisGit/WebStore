@@ -1,13 +1,12 @@
-import User from "./user.mjs";
+import dbManager from "../modules/dbManager.mjs";
 
-class Order extends User {
-  constructor() {
-    super();
+class Order {
+  constructor(orderData) {
     this.orderId;
-    this.userId;
-    this.productId;
-    this.subscribtionMonths;
-    this.cost;
+    this.userId = orderData.userId;
+    this.productIds = orderData.productIds;
+    this.subscriptionMonths = orderData.subscriptionMonths;
+    this.cost = orderData.cost;
   }
   addOrder() {
     return dbManager.createOrder(this);

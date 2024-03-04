@@ -14,17 +14,3 @@ export function isEmpty(input) {
   }
   return false;
 }
-
-export function isString(input) {
-  const inputIsString = typeof input === "string" || input instanceof String;
-
-  if (!inputIsString) {
-    let invalidType = typeof input;
-    if (input === null) invalidType = "null";
-    else if (invalidType === "object") invalidType = input.constructor.name;
-
-    logCollector.log("Input not a string");
-    throw new TypeError(`Expected a string but received a ${invalidType}`);
-  }
-  return true;
-}

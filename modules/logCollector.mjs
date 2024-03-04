@@ -74,13 +74,13 @@ class logCollector {
 
   #writeToLog(msg) {
     // if application is running live, don't write to log files.
-    if (!this.#isLocalEnv) {
+    if (!this.#isLocalEnv()) {
       return;
     }
     const time = new Date().toLocaleTimeString();
     msg += "\n" + time + "  ";
-    // Using regex to replace all occurances of  symbol / with -
     try {
+      // Using regex to replace all occurances of  symbol / with -
       let fileName =
         new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
       let path = "../logs/" + fileName;

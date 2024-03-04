@@ -4,6 +4,7 @@ import { httpCodes } from "./modules/httpCodes.mjs";
 import logCollector from "./modules/logCollector.mjs";
 import CHECKOUT_API from "./routes/checkoutRoutes.mjs";
 import USER_API from "./routes/userRoutes.mjs";
+import CART_API from "./routes/cartRouter.mjs";
 import errorHandler from "./modules/ErrorHandling/errorHandler.mjs";
 import session from "express-session";
 
@@ -22,6 +23,7 @@ server.use(logger.createAutoHTTPLogger());
 
 server.use(express.static("public"));
 server.use("/user", USER_API);
+server.use("/cart", CART_API);
 server.use("/checkout", CHECKOUT_API);
 server.use(errorHandler);
 

@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import { colorizeMethod, colorizeMessage } from "./colorize.mjs";
+import { InternalError } from "./ErrorHandling/customErrors.mjs";
 
 class logCollector {
   static LOGGING_LEVEL = {
@@ -67,18 +68,32 @@ class logCollector {
     next();
   }
 
+  #isLocalEnv() {
+    let env = process.env.DB_SSL === false ? true : false;
+  }
+
   #writeToLog(msg) {
+    // if application is running live, don't write to log files.
+    if (!this.#isLocalEnv) {
+      return;
+    }
     const time = new Date().toLocaleTimeString();
     msg += "\n" + time + "  ";
     // Using regex to replace all occurances of  symbol / with -
-    let fileName = new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
-    let path = "c:/Projects/WebStore/logs/" + fileName;
-    fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
-      if (err) {
-        throw new Error("Error writing to log file: " + err.message);
-        return;
-      }
-    });
+    try {
+      let fileName =
+        new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
+      let path = "../logs/" + fileName;
+      fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
+        if (err) {
+          throw new InternalError("Error writing to log file: " + err.message);
+        }
+      });
+    } catch (err) {
+      throw new InternalError(
+        "Error finding/creating log file: " + err.message
+      );
+    }
   }
 }
 

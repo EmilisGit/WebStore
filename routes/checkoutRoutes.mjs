@@ -7,6 +7,7 @@ import {
   containsIllegalChars,
 } from "../modules/ValidateInput/validateInput.mjs";
 import logCollector from "../modules/logCollector.mjs";
+import authenticate from "../modules/userAuth.mjs";
 
 const CHECKOUT_API = express.Router();
 CHECKOUT_API.use(express.json());
@@ -41,7 +42,7 @@ async function storeCompany(req, res, next) {
   }
 }
 
-CHECKOUT_API.post("/", async (req, res, next) => {
+CHECKOUT_API.post("/", authenticate, async (req, res, next) => {
   try {
     await storeCompany(req, res, next);
     await storeOrder(req, res, next);

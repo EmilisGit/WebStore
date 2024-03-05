@@ -17,4 +17,14 @@ CART_API.post("/", (req, res, next) => {
   next();
 });
 
+CART_API.get("/", (req, res, next) => {
+  try {
+    res.redirect("/shoppingCart.html");
+    //return res.status(httpCodes.OK).json(req.session.cart).end();
+  } catch (error) {
+    next(error);
+  }
+  next();
+});
+
 export default CART_API;

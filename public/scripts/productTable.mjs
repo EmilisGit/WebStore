@@ -83,8 +83,8 @@ async function addToCart(productId) {
   try {
     const response = await postTo("/cart", { productId });
     const cartItems = await response.json();
-    // TODO: Update cart items in UI
-    console.log(response);
+    console.log(cartItems);
+    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
   } catch (error) {
     console.error(error);
   }

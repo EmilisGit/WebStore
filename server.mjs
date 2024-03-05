@@ -5,8 +5,8 @@ import logCollector from "./modules/logCollector.mjs";
 import CHECKOUT_API from "./routes/checkoutRoutes.mjs";
 import USER_API from "./routes/userRoutes.mjs";
 import CART_API from "./routes/cartRouter.mjs";
-import errorHandler from "./modules/ErrorHandling/errorHandler.mjs";
 import session from "express-session";
+import errorHandler from "./modules/errorHandling/errorHandler.mjs";
 
 const server = express();
 const port = process.env.PORT || 8080;
@@ -16,6 +16,7 @@ server.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false, sameSite: "strict" },
   })
 );
 const logger = new logCollector();

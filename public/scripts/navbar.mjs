@@ -15,7 +15,7 @@ async function insertTemplatesFrom(source) {
 function openCart(navbar) {
   const cart = navbar.querySelector("#cartButton");
   cart.addEventListener("click", () => {
-    window.location.href = "/shoppingCart.html";
+    window.location.href = "/cart";
   });
 }
 

@@ -1,25 +1,24 @@
 import { insertTemplates, cloneTemplate } from "../scripts/utils.mjs";
-
-class baseContr {
+class baseView {
   constructor() {
-    this.elementView = {};
     this.templateSource = "";
-    this.templateId = "";
-    this.viewId = "";
+    this.templateID = "";
+    this.viewID = "";
     this.template = null;
     this.view = null;
     this.currentModel = null;
     this.container = null;
   }
 
-  async displayView(model, container) {
-    await this.onBeforeDisplay(model, container);
-
+  async displayView(model, target) {
+    this.container = target;
+    await this.onBeforeDisplay(model, target);
     if (this.view == null) {
       this.onSetup(model, target);
     } else {
       this.onReload(model, target);
     }
+    this.currentModel = model;
   }
 
   async onBeforeDisplay(model, target) {
@@ -28,27 +27,24 @@ class baseContr {
     }
     if (this.template == null) {
       await insertTemplates(this.templateSource, target);
-      this.template = document.getElementById(this.templateId);
+      this.template = document.getElementById(this.templateID);
     }
   }
 
+  onSetup(model, target) {
+    this.view = cloneTemplate(this.template);
+    target.append(this.view);
+  }
+
+  onReload(model, target) {}
+
   remove() {
-    const item = this.container.querySelector("#" + this.viewId);
+    const item = document.querySelector("#" + this.viewID);
     if (item != null) {
       item.remove();
     }
     this.view = null;
   }
-
-  onReload(model, target) {
-    this.view.innerHTML = "";
-    this.view = cloneTemplate(this.template);
-    target.append(this.view);
-  }
-
-  onSetup() {
-    console.log("onSetup not implemented in derived class.");
-  }
 }
 
-export default baseContr;
+export default baseView;

@@ -25,6 +25,10 @@ productTableView.displayView = async function (model, target) {
   currentModel = model;
 };
 
+productTableView.getView = () => {
+  return document.getElementById(viewID);
+};
+
 productTableView.remove = () => {
   const item = container.querySelector("#" + viewID);
   if (item != null) {

@@ -11,8 +11,4 @@ tableView.onSetup = async function (model, target) {
   target.append(tableView.view);
 };
 
-tableView.getView = () => {
-  return document.getElementById(tableView.viewID);
-};
-
 export default tableView;

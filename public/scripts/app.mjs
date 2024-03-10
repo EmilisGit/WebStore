@@ -3,6 +3,7 @@ import navbarView from "../controller/navbarContr.mjs";
 import shoppingCartView from "../controller/shoppingCartContr.mjs";
 import tableView from "../controller/productControllers/productTableContr.mjs";
 import cardView from "../controller/productControllers/productCardsContr.mjs";
+import cartItemView from "../controller/cartItemContr.mjs";
 
 let navbarInfo = JSON.parse(sessionStorage.getItem("navbarInfo"));
 let shoppingCartInfo = JSON.parse(sessionStorage.getItem("shoppingCartItems"));
@@ -30,6 +31,10 @@ async function renderDisplay() {
         shoppingCartInfo = { items: [] };
       }
       await shoppingCartView.displayView(shoppingCartInfo, mainTag);
+      await cartItemView.displayView(
+        shoppingCartInfo,
+        shoppingCartView.getView()
+      );
       break;
   }
 }

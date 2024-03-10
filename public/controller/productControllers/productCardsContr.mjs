@@ -22,7 +22,6 @@ cardView.onSetup = async function (model, target) {
         dialog.close();
       }
     });
-
     target.append(cardView.view);
   }
 };
@@ -41,11 +40,10 @@ function createDialog({ id, img, description, name, price }) {
     if (shoppingCartInfo) {
       cartItems = shoppingCartInfo;
     } else {
-      cartItems = { items: [] }; // Initialize as an empty object with an empty items array
+      cartItems = { items: [] };
     }
     cartItems.items.push({ img, name, id, price });
     sessionStorage.setItem("shoppingCartItems", JSON.stringify(cartItems));
-    console.log("cartItems: ", cartItems.items);
   });
   return dialog;
 }

@@ -36,6 +36,10 @@ class baseView {
     target.append(this.view);
   }
 
+  getView() {
+    return document.getElementById(this.viewID);
+  }
+
   onReload(model, target) {}
 
   remove() {

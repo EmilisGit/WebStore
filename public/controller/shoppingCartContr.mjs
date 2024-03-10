@@ -12,8 +12,6 @@ shoppingCartView.onSetup = async function (model, target) {
   target.append(shoppingCartView.view);
   const keepShoppingButton = target.querySelector("#keep-shopping-btn");
   keepShoppingButton.addEventListener("click", onKeepShoppingClicked);
-
-  shoppingCartView.view.querySelector
 };
 
 function onKeepShoppingClicked(event) {

@@ -1,6 +1,6 @@
 import { cloneTemplate } from "../../scripts/utils.mjs";
 import baseView from "../baseView.mjs";
-import cart from "../../model/shoppingCartMod.mjs";
+import { sessionManager, sessionKeys } from "../../scripts/sessionManager.mjs";
 
 const cardView = new baseView();
 cardView.templateSource = "views/productCard.html";
@@ -33,17 +33,15 @@ function createDialog({ id, img, description, name, price }) {
   dialog.querySelector("h3").innerHTML = name;
 
   dialog.querySelector(".add-to-cart").addEventListener("click", () => {
-    let shoppingCartInfo = JSON.parse(
-      sessionStorage.getItem("shoppingCartItems")
-    );
-    let cartItems;
-    if (shoppingCartInfo) {
-      cartItems = shoppingCartInfo;
-    } else {
-      cartItems = { items: [] };
+    let shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
+    let cartItems = shoppingCartInfo.items || [];
+
+    if (!cartItems.some((item) => item.id === id)) {
+      cartItems.push({ img, name, id, price });
     }
-    cartItems.items.push({ img, name, id, price });
-    sessionStorage.setItem("shoppingCartItems", JSON.stringify(cartItems));
+
+    shoppingCartInfo.items = cartItems;
+    sessionManager.setItem(sessionKeys.shoppingCart, shoppingCartInfo);
   });
   return dialog;
 }

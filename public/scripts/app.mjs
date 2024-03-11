@@ -1,15 +1,19 @@
 import { fetchData } from "./utils.mjs";
+import { sessionKeys, sessionManager } from "./sessionManager.mjs";
 import navbarView from "../controller/navbarContr.mjs";
 import shoppingCartView from "../controller/shoppingCartContr.mjs";
 import tableView from "../controller/productControllers/productTableContr.mjs";
 import cardView from "../controller/productControllers/productCardsContr.mjs";
 import cartItemView from "../controller/cartItemContr.mjs";
+import checkoutView from "../controller/checkoutContr.mjs";
 
-let navbarInfo = JSON.parse(sessionStorage.getItem("navbarInfo"));
-let shoppingCartInfo = JSON.parse(sessionStorage.getItem("shoppingCartItems"));
+let navbarInfo = sessionManager.getItem(sessionKeys.navbar);
+if (sessionManager.getItem(sessionKeys.shoppingCart) == null) {
+  sessionManager.setItem(sessionKeys.shoppingCart, { items: [] });
+}
+let shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
 
 const products = await fetchData("model/products.json");
-
 const mainTag = document.querySelector("main");
 history.pushState({ view: "productTable" }, "");
 
@@ -19,22 +23,23 @@ await renderDisplay();
 async function renderDisplay() {
   let currentView = history.state.view;
   console.log("currentView: ", currentView);
-
   shoppingCartView.onToMainPageEventHandler = navigateToMainPage;
+  shoppingCartView.onToCheckoutEventHandler = navigateToCheckout;
+
   switch (currentView) {
     case "productTable":
       await tableView.displayView({}, mainTag);
       await cardView.displayView(products, tableView.getView());
       break;
     case "shoppingCart":
-      if (shoppingCartInfo == null) {
-        shoppingCartInfo = { items: [] };
-      }
-      await shoppingCartView.displayView(shoppingCartInfo, mainTag);
+      await shoppingCartView.displayView(shoppingCartInfo.items, mainTag);
       await cartItemView.displayView(
-        shoppingCartInfo,
+        shoppingCartInfo.items,
         shoppingCartView.getView()
       );
+      break;
+    case "checkout":
+      await checkoutView.displayView({}, mainTag);
       break;
   }
 }
@@ -42,7 +47,6 @@ async function renderDisplay() {
 async function renderNavbar() {
   navbarView.onToCartEventHandler = navigateToCart;
   navbarView.onToMainPageEventHandler = navigateToMainPage;
-
   if (navbarInfo != null) {
     await navbarView.displayView(navbarInfo, document.querySelector("header"));
   } else {
@@ -52,16 +56,20 @@ async function renderNavbar() {
 
 async function navigateToCart() {
   history.pushState({ view: "shoppingCart" }, "");
-  if (shoppingCartInfo == null) {
-    shoppingCartInfo = { items: [] };
-  }
+  shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
   tableView.remove();
   cardView.remove();
+  cartItemView.remove();
   await renderDisplay();
 }
 
 async function navigateToMainPage() {
   history.pushState({ view: "productTable" }, "");
   shoppingCartView.remove();
+  await renderDisplay();
+}
+
+async function navigateToCheckout() {
+  history.pushState({ view: "checkout" }, "");
   await renderDisplay();
 }

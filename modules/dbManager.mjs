@@ -1,4 +1,5 @@
 import pg from "pg";
+import fs from "fs";
 import logCollector from "./logCollector.mjs";
 import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
 
@@ -34,6 +35,18 @@ class dbManager {
       }
       logCollector.logSuccess(`User with id ${user.id} created`);
       return user.id;
+    } catch (error) {
+      throw new DatabaseError(error.code);
+    } finally {
+      client.end();
+    }
+  }
+  async executeQuery(propertyArray, sqlQuery) {
+    const client = new pg.Client(this.#credentials);
+    try {
+      await client.connect();
+      const output = await client.query(sqlQuery, propertyArray);
+      return output.rows;
     } catch (error) {
       throw new DatabaseError(error.code);
     } finally {

@@ -1,0 +1,1 @@
+INSERT INTO public.users("email") VALUES($1) RETURNING "user_id";

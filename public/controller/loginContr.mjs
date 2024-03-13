@@ -1,6 +1,6 @@
 import baseView from "./baseView.mjs";
 import { sessionManager, sessionKeys } from "../scripts/sessionManager.mjs";
-import { cloneTemplate } from "../scripts/utils.mjs";
+import { cloneTemplate, postTo } from "../scripts/utils.mjs";
 
 const loginView = new baseView();
 loginView.templateSource = "views/login.html";
@@ -12,7 +12,15 @@ loginView.onSetup = async function (model, target) {
   target.append(loginView.view);
   target
     .querySelector("#submit-user")
-    .addEventListener("click", onLoginClicked);
+    .addEventListener("click", onLoginClicked.bind(this, target));
+  target.querySelector(".buttons").style.display = "none";
 };
 
-function onLoginClicked(event) {}
+async function onLoginClicked(target) {
+  const userEmail = target.querySelector("#user-email").value;
+  const response = await postTo("/user/login", { email: userEmail });
+  console.log("status " + response.status);
+  console.log("message " + response.statusText);
+}
+
+export default loginView;

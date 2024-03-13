@@ -6,12 +6,14 @@ import tableView from "../controller/productControllers/productTableContr.mjs";
 import cardView from "../controller/productControllers/productCardsContr.mjs";
 import cartItemView from "../controller/cartItemContr.mjs";
 import checkoutView from "../controller/checkoutContr.mjs";
+import loginView from "../controller/loginContr.mjs";
 
 let navbarInfo = sessionManager.getItem(sessionKeys.navbar);
 if (sessionManager.getItem(sessionKeys.shoppingCart) == null) {
   sessionManager.setItem(sessionKeys.shoppingCart, { items: [] });
 }
 let shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
+let userInfo = JSON.parse(localStorage.getItem("user"));
 
 const products = await fetchData("model/products.json");
 const mainTag = document.querySelector("main");
@@ -39,7 +41,13 @@ async function renderDisplay() {
       );
       break;
     case "checkout":
-      await checkoutView.displayView({}, mainTag);
+      if (userInfo != null) {
+        await checkoutView.displayView({}, mainTag);
+        break;
+      } else {
+        console.log("userInfo: ", userInfo);
+        await loginView.displayView({}, mainTag);
+      }
       break;
   }
 }

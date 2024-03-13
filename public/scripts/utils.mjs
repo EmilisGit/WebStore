@@ -19,4 +19,16 @@ async function fetchData(path) {
   }
 }
 
-export { insertTemplates, cloneTemplate, fetchData };
+async function postTo(url, data) {
+  const header = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+  const response = await fetch(url, header);
+  return response;
+}
+
+export { insertTemplates, cloneTemplate, fetchData, postTo };

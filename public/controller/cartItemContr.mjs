@@ -32,7 +32,7 @@ function createCartItem({ id, img, name, price }) {
 }
 
 function removeItem(id) {
-  let cart = sessionManager.getItem(sessionKeys.shoppingCart);
+  let cart = JSON.parse(localStorage.getItem("shoppingCart"));
   let totalPrice = sessionManager.getItem(sessionKeys.orderPrice);
   let index = cart.items.findIndex((item) => {
     if (item.id === id) {
@@ -41,7 +41,7 @@ function removeItem(id) {
     }
   });
   cart.items.splice(index, 1);
-  sessionManager.setItem(sessionKeys.shoppingCart, cart);
+  localStorage.setItem("shoppingCart", JSON.stringify(cart));
   document.querySelector("#total-price").innerHTML = totalPrice.toFixed(2);
 }
 

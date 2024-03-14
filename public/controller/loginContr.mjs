@@ -1,5 +1,4 @@
 import baseView from "./baseView.mjs";
-import { sessionManager, sessionKeys } from "../scripts/sessionManager.mjs";
 import { cloneTemplate, postTo } from "../scripts/utils.mjs";
 
 const loginView = new baseView();
@@ -18,9 +17,7 @@ loginView.onSetup = async function (model, target) {
 
 async function onLoginClicked(target) {
   const userEmail = target.querySelector("#user-email").value;
-  const response = await postTo("/user/login", { email: userEmail });
-  console.log("status " + response.status);
-  console.log("message " + response.statusText);
+  await postTo("/user/login", { email: userEmail });
 }
 
 export default loginView;

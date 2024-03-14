@@ -9,6 +9,9 @@ class EmailSender {
       host: process.env.APP_EMAILER_HOST,
       port: 25,
       secure: false,
+      tls: {
+        rejectUnauthorized: false,
+      },
       auth: {
         user: process.env.APP_EMAILER_USER,
         pass: process.env.APP_EMAILER_PSW,

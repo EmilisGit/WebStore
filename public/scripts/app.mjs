@@ -7,14 +7,15 @@ import cardView from "../controller/productControllers/productCardsContr.mjs";
 import cartItemView from "../controller/cartItemContr.mjs";
 import checkoutView from "../controller/checkoutContr.mjs";
 import loginView from "../controller/loginContr.mjs";
+import User from "../model/userMod.mjs";
 
-let navbarInfo = sessionManager.getItem(sessionKeys.navbar);
-if (sessionManager.getItem(sessionKeys.shoppingCart) == null) {
-  sessionManager.setItem(sessionKeys.shoppingCart, { items: [] });
+//localStorage.clear();
+if (JSON.parse(localStorage.getItem("shoppingCart")) == null) {
+  localStorage.setItem("shoppingCart", JSON.stringify({ items: [] }));
 }
-let shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
-let userInfo = JSON.parse(localStorage.getItem("user"));
-
+console.log(localStorage.getItem("shoppingCart"));
+let shoppingCartInfo = JSON.parse(localStorage.getItem("shoppingCart"));
+let userInfo = sessionManager.getItem(sessionKeys.user);
 const products = await fetchData("model/products.json");
 const mainTag = document.querySelector("main");
 history.pushState({ view: "productTable" }, "");
@@ -23,6 +24,10 @@ await renderNavbar();
 await renderDisplay();
 
 async function renderDisplay() {
+  if (userInfo.confirmed != true) {
+    User.email = userInfo.email;
+    await User.updateUser();
+  }
   let currentView = history.state.view;
   console.log("currentView: ", currentView);
   shoppingCartView.onToMainPageEventHandler = navigateToMainPage;
@@ -41,11 +46,11 @@ async function renderDisplay() {
       );
       break;
     case "checkout":
-      if (userInfo != null) {
+      if (User.confirmed === true) {
         await checkoutView.displayView({}, mainTag);
         break;
       } else {
-        console.log("userInfo: ", userInfo);
+        console.log("userInfo: ", User.email);
         await loginView.displayView({}, mainTag);
       }
       break;
@@ -55,8 +60,11 @@ async function renderDisplay() {
 async function renderNavbar() {
   navbarView.onToCartEventHandler = navigateToCart;
   navbarView.onToMainPageEventHandler = navigateToMainPage;
-  if (navbarInfo != null) {
-    await navbarView.displayView(navbarInfo, document.querySelector("header"));
+  if (userInfo.email != null) {
+    await navbarView.displayView(
+      userInfo.email,
+      document.querySelector("header")
+    );
   } else {
     await navbarView.displayView({}, document.querySelector("header"));
   }
@@ -64,7 +72,7 @@ async function renderNavbar() {
 
 async function navigateToCart() {
   history.pushState({ view: "shoppingCart" }, "");
-  shoppingCartInfo = sessionManager.getItem(sessionKeys.shoppingCart);
+  shoppingCartInfo = JSON.parse(localStorage.getItem("shoppingCart"));
   tableView.remove();
   cardView.remove();
   cartItemView.remove();
@@ -74,10 +82,13 @@ async function navigateToCart() {
 async function navigateToMainPage() {
   history.pushState({ view: "productTable" }, "");
   shoppingCartView.remove();
+  checkoutView.remove();
+  loginView.remove();
   await renderDisplay();
 }
 
 async function navigateToCheckout() {
   history.pushState({ view: "checkout" }, "");
+  tableView.remove();
   await renderDisplay();
 }

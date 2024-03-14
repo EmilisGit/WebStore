@@ -1,6 +1,5 @@
 const sessionKeys = {
   navbar: "navbarInfo",
-  shoppingCart: "shoppingCartItems",
   user: "userInfo",
   orderPrice: "orderPrice",
 };

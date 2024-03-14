@@ -14,6 +14,14 @@ import jwt from "jsonwebtoken";
 const USER_API = express.Router();
 USER_API.use(express.json());
 USER_API.post("/login", processUser);
+USER_API.get("/confirm/:token", confirmUser);
+USER_API.post("/get-user", getUser);
+
+async function getUser(req, res, next) {
+  logCollector.log("Getting user from session", req.session.user);
+  const user = req.session.user;
+  res.json(user);
+}
 
 async function processUser(req, res, next) {
   try {
@@ -25,15 +33,18 @@ async function processUser(req, res, next) {
     if (isString(email) && !isEmpty(email) && isValidEmail(email)) {
       let user = new User();
       user.email = email;
-      req.session.userEmail = user.email;
       let confirmedUserExists = await user.findConfirmedUser();
-
+      //-------- If user exists and is confirmed ---------
       if (confirmedUserExists == true) {
         logCollector.log(
           "User already exists, checkout link will be sent to email."
         );
-        return res.status(httpCodes.OK).end();
-      } else if (confirmedUserExists === false) {
+        user.id = await user.getId();
+        user.confirmed = true;
+        // send checkout link
+      }
+      // -------- If user exists but is not confirmed ---------
+      else if (confirmedUserExists === false) {
         logCollector.log(
           "User exists but is not confirmed. Send confirmation email."
         );
@@ -42,22 +53,25 @@ async function processUser(req, res, next) {
             user.email,
             "Confirm email address at Webstore"
           );
+          user.id = await user.getId();
         } catch (error) {
           logCollector.log(error);
           return res.status(httpCodes.InternalError).end();
         }
-      } else {
+      }
+      // -------- If user does not exist ---------
+      else {
         logCollector.log(
           "User does not exist, adding user to database. Send confirmation email"
         );
         user.id = await user.addUser();
-
         await EmailSender.sendMail(
           user.email,
           "Confirm email address at Webstore"
         );
-        next();
       }
+      req.session.user = user;
+      req.session.save();
     }
   } catch (error) {
     next(error);
@@ -65,19 +79,15 @@ async function processUser(req, res, next) {
   return res.status(httpCodes.OK).end();
 }
 
-USER_API.get("/confirm/:token", confirmUser);
 async function confirmUser(req, res, next) {
   try {
     const token = req.params.token;
     const decoded = jwt.verify(token, process.env.EMAIL_JWT_SECRET);
     console.log("Decoded email: ", decoded.email);
-    if (decoded.email === req.session.userEmail) {
-      let user = new User();
-      user.confirmUser();
-      return res.status(httpCodes.OK).end();
-    } else {
-      return res.status(httpCodes.Unauthorized).end();
-    }
+    const user = new User();
+    user.confirmUser(decoded.email);
+    res.data = { email: decoded.email, confirmed: true };
+    res.redirect(`${process.env.URI}`);
   } catch (error) {
     next(error);
   }

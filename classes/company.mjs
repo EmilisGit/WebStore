@@ -11,7 +11,8 @@ class Company {
     this.country = companyData.country;
   }
   addCompany() {
-    return dbManager.createCompany(this);
+    this.companyId = dbManager.createCompany(this);
+    return this.companyId;
   }
 }
 

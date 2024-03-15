@@ -12,7 +12,9 @@ navbarView.onToMainPageEventHandler = null;
 navbarView.onSetup = async function (model, target) {
   navbarView.view = cloneTemplate(navbarView.template);
   target.append(navbarView.view);
-  target.querySelector("#nav-bar-email").innerHTML ? model : " ";
+  if (model) {
+    target.querySelector("#nav-bar-email").innerHTML = model;
+  }
   target.querySelector("#cart-button").addEventListener("click", onCartClicked);
   target
     .querySelector("#to-front-page")

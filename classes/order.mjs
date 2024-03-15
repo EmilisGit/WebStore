@@ -9,7 +9,8 @@ class Order {
     this.cost = orderData.cost;
   }
   addOrder() {
-    return dbManager.createOrder(this);
+    this.orderId = dbManager.createOrder(this);
+    return this.orderId;
   }
 }
 

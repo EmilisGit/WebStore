@@ -18,8 +18,10 @@ USER_API.get("/confirm/:token", confirmUser);
 USER_API.post("/get-user", getUser);
 
 async function getUser(req, res, next) {
-  logCollector.log("Getting user from session", req.session.user);
   const user = req.session.user;
+  if (user == null) {
+    res.json({});
+  }
   res.json(user);
 }
 
@@ -41,6 +43,9 @@ async function processUser(req, res, next) {
         );
         user.id = await user.getId();
         user.confirmed = true;
+        req.session.user = user;
+        req.session.save();
+        return res.status(httpCodes.Redirect).redirect(process.env.URI);
         // send checkout link
       }
       // -------- If user exists but is not confirmed ---------
@@ -53,7 +58,6 @@ async function processUser(req, res, next) {
             user.email,
             "Confirm email address at Webstore"
           );
-          user.id = await user.getId();
         } catch (error) {
           logCollector.log(error);
           return res.status(httpCodes.InternalError).end();
@@ -64,14 +68,12 @@ async function processUser(req, res, next) {
         logCollector.log(
           "User does not exist, adding user to database. Send confirmation email"
         );
-        user.id = await user.addUser();
+        await user.addUser();
         await EmailSender.sendMail(
           user.email,
           "Confirm email address at Webstore"
         );
       }
-      req.session.user = user;
-      req.session.save();
     }
   } catch (error) {
     next(error);
@@ -83,10 +85,14 @@ async function confirmUser(req, res, next) {
   try {
     const token = req.params.token;
     const decoded = jwt.verify(token, process.env.EMAIL_JWT_SECRET);
-    console.log("Decoded email: ", decoded.email);
+
     const user = new User();
     user.confirmUser(decoded.email);
-    res.data = { email: decoded.email, confirmed: true };
+    user.email = decoded.email;
+    user.id = await user.getId();
+    req.session.user = user;
+    req.session.save();
+
     res.redirect(`${process.env.URI}`);
   } catch (error) {
     next(error);

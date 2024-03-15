@@ -1,5 +1,10 @@
 <template id="checkout-template">
   <div id="checkout" class="mt-8 w-full max-w-md mx-auto space-y-6">
+    <p
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    >
+      Confirm the order. The payment link will be sent to your email.
+    </p>
     <div class="space-y-2"></div>
     <!-- Checkbox -->
     <div class="flex items-center space-x-2">
@@ -94,7 +99,7 @@
     </div>
 
     <button
-      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors bg-primary text-primary-foreground h-10 px-4 py-2 w-full"
       type="submit"
       id="submitOrder"
     >

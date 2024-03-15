@@ -2,6 +2,7 @@ import pg from "pg";
 import fs from "fs";
 import logCollector from "./logCollector.mjs";
 import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
+import { log } from "console";
 
 let connectionString =
   process.env.ENVIRONMENT === "local"
@@ -22,25 +23,6 @@ class dbManager {
     };
   }
 
-  async createUser(user) {
-    const client = new pg.Client(this.#credentials);
-    try {
-      await client.connect();
-      const output = await client.query(
-        'INSERT INTO "public"."users"("email") VALUES($1) RETURNING "user_id";',
-        [user.email]
-      );
-      if (output.rows.length == 1) {
-        user.id = output.rows[0].user_id;
-      }
-      logCollector.logSuccess(`User with id ${user.id} created`);
-      return user.id;
-    } catch (error) {
-      throw new DatabaseError(error.code);
-    } finally {
-      client.end();
-    }
-  }
   async executeQuery(propertyArray, sqlQuery) {
     const client = new pg.Client(this.#credentials);
     try {
@@ -61,11 +43,18 @@ class dbManager {
     const client = new pg.Client(this.#credentials);
     try {
       await client.connect();
+      logCollector.log("Company id: ", req.session.companyId);
       const output = await client.query(
         `INSERT INTO public.orders(
           user_id, subscription_months, cost, company_id, order_product_ids)
-          VALUES ($1, $2, $3, $4, $5);`,
-        [order.userId, order.subscribtionMonths, order.cost, order.productIds]
+          VALUES ($1, $2, $3, $4, $5) RETURNING user_id;`,
+        [
+          order.userId,
+          order.subscribtionMonths,
+          order.cost,
+          req.session.companyId,
+          order.productIds,
+        ]
       );
       if (output.rows.length == 1) {
         order.id = output.rows[0].order_id;
@@ -85,13 +74,14 @@ class dbManager {
       await client.connect();
       const output = await client.query(
         `INSERT INTO public.companies(
-	company_name, company_code, company_tax_code, address, country)
-	VALUES ('testCompany', 234238, 'LT3234234', 'Grimstad', 'Norway');`,
+          company_name, company_code, company_tax_code, address, zip_code, country)
+          VALUES ($1, $2, $3, $4, $5, $6) RETURNING company_id;`,
         [
           company.companyName,
           company.companyCode,
           company.companyTaxCode,
           company.address,
+          company.zipCode,
           company.country,
         ]
       );

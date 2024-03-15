@@ -2,6 +2,7 @@ const httpCodes = {
   OK: 200,
   TemporaryRedirect: 307,
   PermanentRedirect: 308,
+  Redirect: 302,
   BadRequest: 400,
   Unauthorized: 401,
   PaymentRequired: 402,

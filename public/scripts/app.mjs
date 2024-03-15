@@ -9,13 +9,11 @@ import checkoutView from "../controller/checkoutContr.mjs";
 import loginView from "../controller/loginContr.mjs";
 import User from "../model/userMod.mjs";
 
-//localStorage.clear();
 if (JSON.parse(localStorage.getItem("shoppingCart")) == null) {
   localStorage.setItem("shoppingCart", JSON.stringify({ items: [] }));
 }
-console.log(localStorage.getItem("shoppingCart"));
 let shoppingCartInfo = JSON.parse(localStorage.getItem("shoppingCart"));
-let userInfo = sessionManager.getItem(sessionKeys.user);
+await User.updateUser();
 const products = await fetchData("model/products.json");
 const mainTag = document.querySelector("main");
 history.pushState({ view: "productTable" }, "");
@@ -24,10 +22,7 @@ await renderNavbar();
 await renderDisplay();
 
 async function renderDisplay() {
-  if (userInfo.confirmed != true) {
-    User.email = userInfo.email;
-    await User.updateUser();
-  }
+  renderNavbar();
   let currentView = history.state.view;
   console.log("currentView: ", currentView);
   shoppingCartView.onToMainPageEventHandler = navigateToMainPage;
@@ -46,12 +41,13 @@ async function renderDisplay() {
       );
       break;
     case "checkout":
-      if (User.confirmed === true) {
-        await checkoutView.displayView({}, mainTag);
-        break;
-      } else {
-        console.log("userInfo: ", User.email);
+      await User.updateUser();
+      let userInfo = await User.getUser();
+      console.log("userInfo: ", userInfo);
+      if (userInfo.confirmed !== true) {
         await loginView.displayView({}, mainTag);
+      } else {
+        await checkoutView.displayView({}, mainTag);
       }
       break;
   }
@@ -60,14 +56,13 @@ async function renderDisplay() {
 async function renderNavbar() {
   navbarView.onToCartEventHandler = navigateToCart;
   navbarView.onToMainPageEventHandler = navigateToMainPage;
-  if (userInfo.email != null) {
+  if (Object.keys(await User.getUser()).length !== 0) {
     await navbarView.displayView(
-      userInfo.email,
+      await User.getEmail(),
       document.querySelector("header")
     );
-  } else {
-    await navbarView.displayView({}, document.querySelector("header"));
   }
+  await navbarView.displayView("", document.querySelector("header"));
 }
 
 async function navigateToCart() {

@@ -27,8 +27,12 @@ async function postTo(url, data) {
     },
     body: JSON.stringify(data),
   };
-  const response = await fetch(url, header);
-  return response;
+  try {
+    const response = await fetch(url, header);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export { insertTemplates, cloneTemplate, fetchData, postTo };

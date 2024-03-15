@@ -2,17 +2,38 @@ import { postTo } from "../scripts/utils.mjs";
 import { sessionManager, sessionKeys } from "../scripts/sessionManager.mjs";
 class User {
   constructor() {
-    this.id = null;
-    this.email = null;
-    this.confirmed = null;
+    this.id;
+    this.email;
+    this.confirmed = false;
   }
   async updateUser() {
-    let data = await postTo("/user/get-user");
-    this.id = data.id;
-    this.email = data.email;
-    this.confirmed = data.confirmed;
-    console.log(data.id);
-    sessionManager.setItem(sessionKeys.user, this);
+    try {
+      const response = await postTo("/user/get-user");
+      if (response.ok) {
+        const user = await response.json();
+        if (user) {
+          this.id = user.id;
+          this.email = user.email;
+          this.confirmed = user.confirmed;
+          sessionManager.setItem(sessionKeys.user, user);
+        } else {
+          throw new Error("No user found");
+        }
+      } else {
+        sessionManager.setItem(sessionKeys.user, {});
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  async getUser() {
+    const userInfo = sessionManager.getItem(sessionKeys.user);
+    return userInfo;
+  }
+  async getEmail() {
+    const userEmail = sessionManager.getItem(sessionKeys.user).email;
+    return userEmail;
   }
 }
 

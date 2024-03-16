@@ -2,7 +2,6 @@ import pg from "pg";
 import fs from "fs";
 import logCollector from "./logCollector.mjs";
 import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
-import { log } from "console";
 
 let connectionString =
   process.env.ENVIRONMENT === "local"
@@ -43,17 +42,21 @@ class dbManager {
     const client = new pg.Client(this.#credentials);
     try {
       await client.connect();
-      logCollector.log("Company id: ", req.session.companyId);
       const output = await client.query(
-        `INSERT INTO public.orders(
-          user_id, subscription_months, cost, company_id, order_product_ids)
-          VALUES ($1, $2, $3, $4, $5) RETURNING user_id;`,
+        `INSERT INTO public.all_orders(
+          user_id, subscription_months, cost, order_product_ids, company_name, company_code, company_tax_code, address, zip_code, country)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING order_id;`,
         [
           order.userId,
           order.subscribtionMonths,
           order.cost,
-          req.session.companyId,
           order.productIds,
+          order.companyName,
+          order.companyCode,
+          order.companyTaxCode,
+          order.address,
+          order.zipCode,
+          order.country,
         ]
       );
       if (output.rows.length == 1) {
@@ -67,34 +70,6 @@ class dbManager {
       client.end();
     }
   }
-
-  async createCompany(company) {
-    const client = new pg.Client(this.#credentials);
-    try {
-      await client.connect();
-      const output = await client.query(
-        `INSERT INTO public.companies(
-          company_name, company_code, company_tax_code, address, zip_code, country)
-          VALUES ($1, $2, $3, $4, $5, $6) RETURNING company_id;`,
-        [
-          company.companyName,
-          company.companyCode,
-          company.companyTaxCode,
-          company.address,
-          company.zipCode,
-          company.country,
-        ]
-      );
-      if (output.rows.length == 1) {
-        company.id = output.rows[0].company_id;
-      }
-      logCollector.logSuccess(`Company with id ${company.id} created`);
-      return company.id;
-    } catch (error) {
-      throw new DatabaseError(error.code);
-    } finally {
-      client.end();
-    }
-  }
 }
+
 export default new dbManager(connectionString);

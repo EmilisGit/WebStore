@@ -10,11 +10,19 @@ checkoutView.onSetup = async function (model, target) {
   checkoutView.view = await cloneTemplate(checkoutView.template);
   target.append(checkoutView.view);
   target.querySelector(".buttons").style.display = "none";
+  const checkboxState = target.querySelector("#companyCheckbox");
+  const companyDetails = target.querySelector("#company-info");
+
+  if (checkboxState.getAttribute("data-state") === "checked") {
+    companyName = document.getElementById("company-name").value;
+    companyCode = document.getElementById("company-code").value;
+    companyTaxCode = document.getElementById("company-tax-code").value;
+    country = document.getElementById("country").value;
+    address = document.getElementById("address").value;
+    zipCode = document.getElementById("zip-code").value;
+  }
 
   target.querySelector("#companyCheckbox").addEventListener("click", () => {
-    const checkboxState = target.querySelector("#companyCheckbox");
-    const companyDetails = target.querySelector("#company-info");
-
     if (checkboxState.getAttribute("data-state") === "unchecked") {
       companyDetails.style.display = "block";
       checkboxState.setAttribute("data-state", "checked");

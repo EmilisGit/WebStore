@@ -31,11 +31,11 @@ async function processUser(req, res, next) {
       logCollector.logSuccess("Input does not contain illegal characters.");
     }
     const email = req.body.email;
-
     if (isString(email) && !isEmpty(email) && isValidEmail(email)) {
       let user = new User();
       user.email = email;
       let confirmedUserExists = await user.findConfirmedUser();
+
       //-------- If user exists and is confirmed ---------
       if (confirmedUserExists == true) {
         logCollector.log(
@@ -44,8 +44,7 @@ async function processUser(req, res, next) {
         user.id = await user.getId();
         user.confirmed = true;
         req.session.user = user;
-        req.session.save();
-        return res.status(httpCodes.Redirect).redirect(process.env.URI);
+        console.log("User in session: ", req.session.user.id);
         // send checkout link
       }
       // -------- If user exists but is not confirmed ---------
@@ -91,7 +90,6 @@ async function confirmUser(req, res, next) {
     user.email = decoded.email;
     user.id = await user.getId();
     req.session.user = user;
-    req.session.save();
 
     res.redirect(`${process.env.URI}`);
   } catch (error) {

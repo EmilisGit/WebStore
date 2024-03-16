@@ -1,4 +1,5 @@
 import pg from "pg";
+import fs from "fs";
 import logCollector from "./logCollector.mjs";
 import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
 
@@ -21,19 +22,12 @@ class dbManager {
     };
   }
 
-  async createUser(user) {
+  async executeQuery(propertyArray, sqlQuery) {
     const client = new pg.Client(this.#credentials);
     try {
       await client.connect();
-      const output = await client.query(
-        'INSERT INTO "public"."users"("email") VALUES($1) RETURNING "user_id";',
-        [user.email]
-      );
-      if (output.rows.length == 1) {
-        user.id = output.rows[0].user_id;
-      }
-      logCollector.logSuccess(`User with id ${user.id} created`);
-      return user.id;
+      const output = await client.query(sqlQuery, propertyArray);
+      return output.rows;
     } catch (error) {
       throw new DatabaseError(error.code);
     } finally {
@@ -49,10 +43,21 @@ class dbManager {
     try {
       await client.connect();
       const output = await client.query(
-        `INSERT INTO public.orders(
-          user_id, subscription_months, cost, company_id, order_product_ids)
-          VALUES ($1, $2, $3, $4, $5);`,
-        [order.userId, order.subscribtionMonths, order.cost, order.productIds]
+        `INSERT INTO public.all_orders(
+          user_id, subscription_months, cost, order_product_ids, company_name, company_code, company_tax_code, address, zip_code, country)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING order_id;`,
+        [
+          order.userId,
+          order.subscribtionMonths,
+          order.cost,
+          order.productIds,
+          order.companyName,
+          order.companyCode,
+          order.companyTaxCode,
+          order.address,
+          order.zipCode,
+          order.country,
+        ]
       );
       if (output.rows.length == 1) {
         order.id = output.rows[0].order_id;
@@ -65,33 +70,6 @@ class dbManager {
       client.end();
     }
   }
-
-  async createCompany(company) {
-    const client = new pg.Client(this.#credentials);
-    try {
-      await client.connect();
-      const output = await client.query(
-        `INSERT INTO public.companies(
-	company_name, company_code, company_tax_code, address, country)
-	VALUES ('testCompany', 234238, 'LT3234234', 'Grimstad', 'Norway');`,
-        [
-          company.companyName,
-          company.companyCode,
-          company.companyTaxCode,
-          company.address,
-          company.country,
-        ]
-      );
-      if (output.rows.length == 1) {
-        company.id = output.rows[0].company_id;
-      }
-      logCollector.logSuccess(`Company with id ${company.id} created`);
-      return company.id;
-    } catch (error) {
-      throw new DatabaseError(error.code);
-    } finally {
-      client.end();
-    }
-  }
 }
+
 export default new dbManager(connectionString);

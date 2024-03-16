@@ -1,0 +1,38 @@
+<template id="nav-bar-template">
+  <div id="nav-bar" class="flex h-14 items-center px-4 border-b">
+    <button
+      id="to-front-page"
+      class="inline-flex items-center justify-center px-4"
+    >
+      WebStore
+    </button>
+    <div id="nav-bar-email" class="flex-1 font-semibold text-right pr-4"></div>
+    <button
+      class="inline-flex items-center justify-center text-sm font-medium border bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-4"
+    >
+      Orders</button
+    ><button
+      id="cart-button"
+      class="inline-flex items-center justify-center border bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10 ml-4 rounded-full"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="w-4 h-4"
+      >
+        <circle cx="8" cy="21" r="1"></circle>
+        <circle cx="19" cy="21" r="1"></circle>
+        <path
+          d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+        ></path></svg
+      ><span class="sr-only">Toggle cart</span>
+    </button>
+  </div>
+</template>

@@ -8,6 +8,13 @@ export function containsIllegalChars(input) {
   return false;
 }
 
+export function isString(input) {
+  if (typeof input !== "string") {
+    throw new BadRequestError("Input is not a string.");
+  }
+  return true;
+}
+
 export function isEmpty(input) {
   if (input.trim().length === 0) {
     throw new BadRequestError("Input is empty.");

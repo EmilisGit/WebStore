@@ -13,6 +13,7 @@ if (JSON.parse(localStorage.getItem("shoppingCart")) == null) {
   localStorage.setItem("shoppingCart", JSON.stringify({ items: [] }));
 }
 let shoppingCartInfo = JSON.parse(localStorage.getItem("shoppingCart"));
+console.log("Shopping cart: ", shoppingCartInfo);
 await User.updateUser();
 const products = await fetchData("model/products.json");
 const mainTag = document.querySelector("main");

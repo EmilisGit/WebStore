@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import { InternalError } from "./ErrorHandling/customErrors.mjs";
 import logCollector from "./logCollector.mjs";
-import jwt from "jsonwebtoken";
 
 class EmailSender {
   constructor() {
@@ -19,23 +18,14 @@ class EmailSender {
     });
   }
 
-  formLink(email) {}
-
-  async sendMail(to, subject) {
+  async sendMail(to, subject, text) {
     try {
-      const token = jwt.sign({ email: to }, process.env.EMAIL_JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      const url = `${process.env.URI}/user/confirm/${token}`;
-      console.log(to, " ", subject, " ", url);
-
-      const info = await this.transporter.sendMail({
+      await this.transporter.sendMail({
         to: to,
         subject: subject,
-        text: url,
+        text: text,
       });
-      logCollector.log("Confirmation email sent to: " + info.messageId);
+      logCollector.log(`Confirmation email sent to: ${to}`);
     } catch (error) {
       throw new InternalError("Email could not be sent." + error.message);
     }

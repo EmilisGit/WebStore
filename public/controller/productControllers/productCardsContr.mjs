@@ -34,7 +34,6 @@ function createDialog({ id, img, description, name, price }) {
   dialog.querySelector(".add-to-cart").addEventListener("click", () => {
     let shoppingCartInfo = JSON.parse(localStorage.getItem("shoppingCart"));
     let cartItems = shoppingCartInfo.items || [];
-    console.log(cartItems);
 
     if (!cartItems.some((item) => item.id === id)) {
       cartItems.push({ img, name, id, price });

@@ -1,19 +1,17 @@
 import express from "express";
 import User from "../classes/user.mjs";
 import { httpCodes } from "../modules/httpCodes.mjs";
-import {
-  isEmpty,
-  containsIllegalChars,
-  isString,
-} from "../modules/ValidateInput/validateInput.mjs";
+import { isEmpty, isString } from "../modules/ValidateInput/validateInput.mjs";
 import isValidEmail from "../modules/ValidateInput/validateEmail.mjs";
 import logCollector from "../modules/logCollector.mjs";
 import EmailSender from "../modules/emailer.mjs";
 import jwt from "jsonwebtoken";
+import authenticationLink from "../modules/authenticationLink.mjs";
+import { sanitizeInput } from "../modules/ValidateInput/validateInput.mjs";
 
 const USER_API = express.Router();
 USER_API.use(express.json());
-USER_API.post("/login", processUser);
+USER_API.post("/login", sanitizeInput, processUser);
 USER_API.get("/confirm/:token", confirmUser);
 USER_API.post("/get-user", getUser);
 
@@ -27,25 +25,20 @@ async function getUser(req, res, next) {
 
 async function processUser(req, res, next) {
   try {
-    if (!containsIllegalChars(Object.values(req.body).join(""))) {
-      logCollector.logSuccess("Input does not contain illegal characters.");
-    }
+    const user = new User();
     const email = req.body.email;
     if (isString(email) && !isEmpty(email) && isValidEmail(email)) {
-      let user = new User();
       user.email = email;
       let confirmedUserExists = await user.findConfirmedUser();
 
       //-------- If user exists and is confirmed ---------
       if (confirmedUserExists == true) {
-        logCollector.log(
-          "User already exists, checkout link will be sent to email."
-        );
         user.id = await user.getId();
         user.confirmed = true;
         req.session.user = user;
-        console.log("User in session: ", req.session.user.id);
-        // send checkout link
+        logCollector.logSuccess(
+          `The user already exists: ${req.session.user.email}`
+        );
       }
       // -------- If user exists but is not confirmed ---------
       else if (confirmedUserExists === false) {
@@ -55,7 +48,8 @@ async function processUser(req, res, next) {
         try {
           await EmailSender.sendMail(
             user.email,
-            "Confirm email address at Webstore"
+            "Confirm email address at Webstore",
+            authenticationLink(user.email)
           );
         } catch (error) {
           logCollector.log(error);
@@ -67,11 +61,17 @@ async function processUser(req, res, next) {
         logCollector.log(
           "User does not exist, adding user to database. Send confirmation email"
         );
-        await user.addUser();
-        await EmailSender.sendMail(
-          user.email,
-          "Confirm email address at Webstore"
-        );
+        try {
+          await user.addUser();
+          await EmailSender.sendMail(
+            user.email,
+            "Confirm email address at Webstore",
+            authenticationLink(user.email)
+          );
+        } catch (error) {
+          logCollector.log(error);
+          return res.status(httpCodes.InternalError).end();
+        }
       }
     }
   } catch (error) {
@@ -86,7 +86,7 @@ async function confirmUser(req, res, next) {
     const decoded = jwt.verify(token, process.env.EMAIL_JWT_SECRET);
 
     const user = new User();
-    user.confirmUser(decoded.email);
+    await user.confirmUser(decoded.email);
     user.email = decoded.email;
     user.id = await user.getId();
     req.session.user = user;

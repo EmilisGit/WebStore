@@ -1,12 +1,8 @@
 import { BadRequestError } from "../ErrorHandling/customErrors.mjs";
-const ILLEGAL_CHARS = /[\";<>]/;
+import logCollector from "../logCollector.mjs";
+import { httpCodes } from "../httpCodes.mjs";
 
-export function containsIllegalChars(input) {
-  if (ILLEGAL_CHARS.test(input)) {
-    throw new BadRequestError("Input contains illegal characters.");
-  }
-  return false;
-}
+const ILLEGAL_CHARS = /[\";<>]/;
 
 export function isString(input) {
   if (typeof input !== "string") {
@@ -20,4 +16,17 @@ export function isEmpty(input) {
     throw new BadRequestError("Input is empty.");
   }
   return false;
+}
+
+export function sanitizeInput(req, res, next) {
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return next();
+  }
+  if (!ILLEGAL_CHARS.test(Object.values(req.body).join(""))) {
+    logCollector.logSuccess("Input does not contain illegal chars.");
+    return next();
+  } else {
+    logCollector.logError("Input contains illegal chars: ", req.body);
+    res.status(httpCodes.BadRequest).send('Invalid input (contains ";<></>');
+  }
 }

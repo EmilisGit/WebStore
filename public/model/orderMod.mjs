@@ -2,17 +2,17 @@ import { sessionManager, sessionKeys } from "../scripts/sessionManager.mjs";
 import { postTo } from "../scripts/utils.mjs";
 class Order {
   constructor() {
-    this.userId = sessionManager.getItem(sessionKeys.user).id;
-    this.productIds = [];
-    this.subscriptionMonths = 0;
-    this.cost = 0;
-    this.companyId = "";
-    this.companyName = "";
-    this.companyCode = "";
-    this.companyTaxCode = "";
-    this.address = "";
-    this.zipCode = "";
-    this.country = "";
+    this.userId;
+    this.productIds;
+    this.subscriptionMonths;
+    this.cost;
+    this.companyId;
+    this.companyName;
+    this.companyCode;
+    this.companyTaxCode;
+    this.address;
+    this.zipCode;
+    this.country;
   }
 
   async updateOrder() {

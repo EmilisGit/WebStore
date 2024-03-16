@@ -1,28 +1,30 @@
 import express from "express";
 import Order from "../classes/order.mjs";
-import { httpCodes } from "../modules/httpCodes.mjs";
-import {
-  isEmpty,
-  containsIllegalChars,
-} from "../modules/ValidateInput/validateInput.mjs";
 import logCollector from "../modules/logCollector.mjs";
-import authenticate from "../modules/userAuth.mjs";
+import { httpCodes } from "../modules/httpCodes.mjs";
+import { sanitizeInput } from "../modules/ValidateInput/validateInput.mjs";
+import { formOrderLink } from "../modules/paymentService.mjs";
+import EmailSender from "../modules/emailer.mjs";
 
 const CHECKOUT_API = express.Router();
-CHECKOUT_API.use(express.json());
 
-CHECKOUT_API.post("/", authenticate, storeOrder);
+CHECKOUT_API.use(express.json());
+CHECKOUT_API.post("/", sanitizeInput, storeOrder);
 
 async function storeOrder(req, res, next) {
   try {
-    if (!containsIllegalChars(Object.values(req.body).join(""))) {
-      logCollector.logSuccess("Input does not contain illegal characters.");
-    }
     const orderData = req.body;
     let order = new Order(orderData);
     order.userId = req.session.user.id;
-    req.session.orderId = await order.addOrder();
-    console.log("Order id in order middleware: ", req.session.orderId);
+    await order.addOrder();
+    req.session.orderId = order.id;
+
+    const link = await formOrderLink(order, req.session.user.email);
+    EmailSender.sendMail(
+      req.session.user.email,
+      "Your Stripe checkout is ready.",
+      link
+    );
     return res.status(httpCodes.OK).end();
   } catch (error) {
     next(error);

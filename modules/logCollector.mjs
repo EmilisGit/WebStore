@@ -68,13 +68,9 @@ class logCollector {
     next();
   }
 
-  #isLocalEnv() {
-    let env = process.env.DB_SSL === false ? true : false;
-  }
-
   #writeToLog(msg) {
     // if application is running live, don't write to log files.
-    if (!this.#isLocalEnv()) {
+    if (!process.env.SERVER == "local") {
       return;
     }
     const time = new Date().toLocaleTimeString();
@@ -83,7 +79,7 @@ class logCollector {
       // Using regex to replace all occurances of  symbol / with -
       let fileName =
         new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
-      let path = "../logs/" + fileName;
+      let path = "c:/Projects/WebStore/logs/" + fileName;
       fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
         if (err) {
           throw new InternalError("Error writing to log file: " + err.message);

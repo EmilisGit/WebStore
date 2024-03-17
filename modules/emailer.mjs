@@ -16,12 +16,12 @@ class EmailSender {
     });
   }
 
-  async sendMail(to, subject, text) {
+  async sendMail(to, subject, html) {
     try {
       await this.transporter.sendMail({
         to: to,
         subject: subject,
-        text: text,
+        html: html,
       });
       logCollector.log(`Confirmation email sent to: ${to}`);
     } catch (error) {

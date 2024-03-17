@@ -1,5 +1,4 @@
 import { fetchData } from "./utils.mjs";
-import { sessionKeys, sessionManager } from "./sessionManager.mjs";
 import navbarView from "../controller/navbarContr.mjs";
 import shoppingCartView from "../controller/shoppingCartContr.mjs";
 import tableView from "../controller/productControllers/productTableContr.mjs";
@@ -58,6 +57,7 @@ async function renderNavbar() {
   navbarView.onToCartEventHandler = navigateToCart;
   navbarView.onToMainPageEventHandler = navigateToMainPage;
   const userInfo = await User.getUser();
+  console.log("userInfo", userInfo);
   if (userInfo.confirmed === true) {
     await navbarView.displayView(
       await User.getEmail(),

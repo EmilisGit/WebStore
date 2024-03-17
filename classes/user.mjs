@@ -36,10 +36,11 @@ class User {
     return response.map(Object.values).flat()[0];
   }
   async confirmUser(email) {
-    await dbManager.executeQuery(
+    const response = await dbManager.executeQuery(
       [email],
-      "UPDATE public.users SET confirmed = true WHERE email = $1;"
+      'UPDATE public.users SET confirmed = true WHERE email = $1 RETURNING "confirmed";'
     );
+    return response.map(Object.values).flat()[0];
   }
 }
 export default User;

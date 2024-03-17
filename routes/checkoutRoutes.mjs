@@ -1,5 +1,6 @@
 import express from "express";
 import Order from "../classes/order.mjs";
+import logCollector from "../modules/logCollector.mjs";
 import { httpCodes } from "../modules/httpCodes.mjs";
 import { sanitizeInput } from "../modules/ValidateInput/validateInput.mjs";
 import { formOrderLink } from "../modules/paymentService.mjs";
@@ -23,11 +24,11 @@ async function storeOrder(req, res, next) {
       await EmailSender.sendMail(
         req.session.user.email,
         "Your Stripe checkout is ready.",
-        link
+        `<a href="${link}">${link}</a>`
       );
       return res.status(httpCodes.OK).end();
     } catch (error) {
-      console.error(error);
+      logCollector.logError(error);
       return res.status(httpCodes.InternalError).end();
     }
   } catch (error) {

@@ -49,7 +49,9 @@ async function processUser(req, res, next) {
           await EmailSender.sendMail(
             user.email,
             "Confirm email address at Webstore",
-            authenticationLink(user.email)
+            `<a href="${authenticationLink(user.email)}">${authenticationLink(
+              user.email
+            )}</a>`
           );
         } catch (error) {
           logCollector.log(error);
@@ -66,7 +68,9 @@ async function processUser(req, res, next) {
           await EmailSender.sendMail(
             user.email,
             "Confirm email address at Webstore",
-            authenticationLink(user.email)
+            `<a href="${authenticationLink(user.email)}">${authenticationLink(
+              user.email
+            )}</a>`
           );
         } catch (error) {
           logCollector.log(error);
@@ -86,11 +90,11 @@ async function confirmUser(req, res, next) {
     const decoded = jwt.verify(token, process.env.EMAIL_JWT_SECRET);
 
     const user = new User();
-    await user.confirmUser(decoded.email);
+    user.confirmed = await user.confirmUser(decoded.email);
     user.email = decoded.email;
     user.id = await user.getId();
     req.session.user = user;
-    res.redirect(process.env.URI);
+    res.redirect(`${process.env.URI}`);
   } catch (error) {
     next(error);
   }

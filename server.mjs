@@ -5,7 +5,7 @@ import logCollector from "./modules/logCollector.mjs";
 import CHECKOUT_API from "./routes/checkoutRoutes.mjs";
 import USER_API from "./routes/userRoutes.mjs";
 import session from "express-session";
-import errorHandler from "./modules/errorHandling/errorHandler.mjs";
+import errorHandler from "./modules/ErrorHandling/errorHandler.mjs";
 
 const server = express();
 const port = process.env.PORT || 8080;

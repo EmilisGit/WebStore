@@ -6,3 +6,7 @@ CREATE TABLE IF NOT EXISTS public.users
     CONSTRAINT users_pkey PRIMARY KEY (user_id),
     CONSTRAINT constraint_emails_unique UNIQUE (email)
 )
+
+INSERT INTO public.users("email") VALUES($1) RETURNING "user_id";
+
+SELECT * FROM public.users WHERE user_id = $1;

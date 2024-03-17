@@ -1,16 +1,6 @@
 import pg from "pg";
-import fs from "fs";
 import logCollector from "./logCollector.mjs";
 import { DatabaseError, InternalError } from "./ErrorHandling/customErrors.mjs";
-
-let connectionString =
-  process.env.ENVIRONMENT === "local"
-    ? process.env.DB_CONNECTIONSTRING_LOCAL
-    : process.env.DB_CONNECTIONSTRING_PROD;
-
-if (connectionString === undefined) {
-  throw new InternalError("No database connection string found.");
-}
 
 class dbManager {
   #credentials = {};
@@ -34,9 +24,6 @@ class dbManager {
       client.end();
     }
   }
-
-  // First store company in the database, then store the order
-  // the company id is needed to store the order
 
   async createOrder(order) {
     const client = new pg.Client(this.#credentials);
@@ -70,6 +57,15 @@ class dbManager {
       client.end();
     }
   }
+}
+
+let connectionString =
+  process.env.ENVIORMENT == "local"
+    ? process.env.DB_CONNECTIONSTRING_LOCAL
+    : process.env.DB_CONNECTIONSTRING_PROD;
+
+if (connectionString === undefined) {
+  throw new InternalError("No database connection string found.");
 }
 
 export default new dbManager(connectionString);

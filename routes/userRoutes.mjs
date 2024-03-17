@@ -90,8 +90,6 @@ async function confirmUser(req, res, next) {
     user.email = decoded.email;
     user.id = await user.getId();
     req.session.user = user;
-
-    res.redirect(`${process.env.URI}`);
   } catch (error) {
     next(error);
   }

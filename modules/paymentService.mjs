@@ -21,12 +21,7 @@ export async function formOrderLink(order, email) {
     mode: "payment",
     success_url: process.env.URI,
     cancel_url: process.env.URI,
+    customer_email: email,
   });
-  logCollector.log(link.url);
-  // const info = await this.transporter.sendMail({
-  //   to: to,
-  //   subject: subject,
-  //   text: link,
-  // });
   return link.url;
 }

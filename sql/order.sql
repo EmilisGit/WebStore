@@ -19,4 +19,8 @@ CREATE TABLE IF NOT EXISTS public.all_orders
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
-)
+);
+
+INSERT INTO public.orders(
+	user_id, subscription_months, cost, company_id, order_product_ids)
+	VALUES (1, 1, 1, 1, '{1, 2}');

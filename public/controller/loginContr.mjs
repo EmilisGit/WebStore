@@ -6,6 +6,7 @@ const loginView = new baseView();
 loginView.templateSource = "views/login.html";
 loginView.templateID = "login-template";
 loginView.viewID = "login";
+loginView.confirmedUserEventHandler = null;
 
 loginView.onSetup = async function (model, target) {
   loginView.view = await cloneTemplate(loginView.template);
@@ -22,6 +23,10 @@ async function onLoginClicked(target) {
   const userEmail = target.querySelector("#user-email").value;
   await postTo("/user/login", { email: userEmail });
   await User.updateUser();
+
+  if (User.confirmed) {
+    loginView.confirmedUserEventHandler();
+  }
 }
 
 export default loginView;

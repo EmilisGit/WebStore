@@ -70,25 +70,28 @@ class logCollector {
 
   #writeToLog(msg) {
     // if application is running live, don't write to log files.
-    if (!process.env.SERVER == "local") {
+    if (!process.env.URI.includes("localhost")) {
       return;
-    }
-    const time = new Date().toLocaleTimeString();
-    msg += "\n" + time + "  ";
-    try {
-      // Using regex to replace all occurances of  symbol / with -
-      let fileName =
-        new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
-      let path = "c:/Projects/WebStore/logs/" + fileName;
-      fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
-        if (err) {
-          throw new InternalError("Error writing to log file: " + err.message);
-        }
-      });
-    } catch (err) {
-      throw new InternalError(
-        "Error finding/creating log file: " + err.message
-      );
+    } else {
+      const time = new Date().toLocaleTimeString();
+      msg += "\n" + time + "  ";
+      try {
+        // Using regex to replace all occurances of  symbol / with -
+        let fileName =
+          new Date().toLocaleDateString().replace(/\//g, "-") + ".txt";
+        let path = "c:/Projects/WebStore/logs/" + fileName;
+        fs.appendFile(path, msg, { encoding: "utf8" }, (err) => {
+          if (err) {
+            throw new InternalError(
+              "Error writing to log file: " + err.message
+            );
+          }
+        });
+      } catch (err) {
+        throw new InternalError(
+          "Error finding/creating log file: " + err.message
+        );
+      }
     }
   }
 }

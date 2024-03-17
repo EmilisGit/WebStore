@@ -1,5 +1,4 @@
 import Stripe from "stripe";
-import logCollector from "./logCollector.mjs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
